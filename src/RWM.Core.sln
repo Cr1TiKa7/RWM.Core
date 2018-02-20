@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RWM.Core", "RWM.Core\RWM.Core.csproj", "{ADEECE08-2E89-4159-BD2D-C1B22D5C80B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RWM.Core.Sample", "RWM.Core.Sample\RWM.Core.Sample.csproj", "{B809EE90-A980-428C-AB62-913B44CE8D27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{ADEECE08-2E89-4159-BD2D-C1B22D5C80B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADEECE08-2E89-4159-BD2D-C1B22D5C80B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADEECE08-2E89-4159-BD2D-C1B22D5C80B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B809EE90-A980-428C-AB62-913B44CE8D27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B809EE90-A980-428C-AB62-913B44CE8D27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B809EE90-A980-428C-AB62-913B44CE8D27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B809EE90-A980-428C-AB62-913B44CE8D27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

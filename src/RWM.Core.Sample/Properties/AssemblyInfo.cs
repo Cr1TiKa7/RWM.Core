@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RWM.Core")]
+[assembly: AssemblyTitle("RWM.Core.Sample")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("RWM.Core")]
+[assembly: AssemblyProduct("RWM.Core.Sample")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("adeece08-2e89-4159-bd2d-c1b22d5c80b6")]
+[assembly: Guid("b809ee90-a980-428c-ab62-913b44ce8d27")]
 
 // Version information for an assembly consists of the following four values:
 //
