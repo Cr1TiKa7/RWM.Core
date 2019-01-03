@@ -12,15 +12,17 @@ namespace RWM.Core
     {
         //The function to read the memory of a process
         [DllImport("kernel32.dll")]
-        private static extern IntPtr ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int dwSize, ref IntPtr lpNumberOfBytesRead);
+        private static extern Int32 ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, UInt32 dwSize, ref IntPtr lpNumberOfBytesRead);
 
         //The function to write into the memory of a process
         [DllImport("kernel32.dll")]
-        private static extern IntPtr WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int dwSize, ref IntPtr lpNumberOfBytesRead);
+        private static extern Int32 WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, UInt32 dwSize, ref IntPtr lpNumberOfBytesRead);
 
-        private IntPtr _ProcessHandle;
+        private readonly IntPtr _ProcessHandle;
         private ProcessModule _ProcessModule;
-        private IntPtr _BaseAddress;
+        private readonly IntPtr _BaseAddress;
+        public IntPtr EndBaseAddress;
+        public IntPtr BaseAddress => _BaseAddress;
         private Process[] _ProcessList;
         /// <summary>
         /// Initializing the class
@@ -31,7 +33,7 @@ namespace RWM.Core
             try
             {
                 _ProcessList = Process.GetProcessesByName(processName);
-                if (_ProcessList.Count() == 0)
+                if (!_ProcessList.Any())
                 {
                     //TODO: Throw exception that the process couldn't been found
                 }
@@ -40,6 +42,7 @@ namespace RWM.Core
                     _ProcessHandle = _ProcessList.First().Handle;
                     _ProcessModule = _ProcessList.First().MainModule;
                     _BaseAddress = _ProcessModule.BaseAddress;
+                    EndBaseAddress =  IntPtr.Add(_BaseAddress, _ProcessModule.ModuleMemorySize);
                 }
             }
             catch (Exception ex)
@@ -57,10 +60,10 @@ namespace RWM.Core
         /// <returns></returns>
         private byte[] ReadBase(int address, int length = 4)
         {
-            byte[] retBuffer = new byte[length - 1];
+            byte[] retBuffer = new byte[length];
             IntPtr zero = IntPtr.Zero;
 
-            ReadProcessMemory(_ProcessHandle, new IntPtr(address), retBuffer, retBuffer.Length, ref zero);
+            ReadProcessMemory(_ProcessHandle, new IntPtr(address), retBuffer, (UInt32)retBuffer.Length, ref zero);
 
             return retBuffer;
         }
@@ -87,6 +90,22 @@ namespace RWM.Core
             return BitConverter.ToInt32(ReadBase(address, length), 0);
         }
 
+        /// <summary>
+        /// Returns an integer from the memory address to read from
+        /// </summary>
+        /// <param name="address">The memory address to read from</param>
+        /// <param name="offsets">The offsets that are pointing to the right address</param>
+        /// <param name="length">The length of the value (Optional)</param>
+        /// <returns>An integer value</returns>
+        public int ReadInt(int address, int[] offsets, int length = 4)
+        {
+            var value = ReadInt(_BaseAddress.ToInt32() + address);
+            foreach (int offset in offsets)
+            {
+                value = ReadInt(value + offset);
+            }
+            return value;
+        }
         /// <summary>
         /// Returns an float from the memory address to read from
         /// </summary>
@@ -121,7 +140,7 @@ namespace RWM.Core
             byte[] buffer = BitConverter.GetBytes(value);
             IntPtr zero = IntPtr.Zero;
 
-            WriteProcessMemory(_ProcessHandle, new IntPtr(address), buffer, buffer.Length, ref zero);
+            WriteProcessMemory(_ProcessHandle, new IntPtr(address), buffer, (UInt32)buffer.Length, ref zero);
         }
 
         /// <summary>
@@ -134,7 +153,7 @@ namespace RWM.Core
             byte[] buffer = Encoding.ASCII.GetBytes(value);
             IntPtr textLength = new IntPtr(value.Length);
 
-            WriteProcessMemory(_ProcessHandle, new IntPtr(address), buffer, buffer.Length, ref textLength);
+            WriteProcessMemory(_ProcessHandle, new IntPtr(address), buffer, (UInt32)buffer.Length, ref textLength);
         }
 
         /// <summary>
@@ -151,6 +170,23 @@ namespace RWM.Core
         }
 
         /// <summary>
+        /// Writes an float value into the memory address.
+        /// </summary>
+        /// <param name="address">The memory address to write to.</param>
+        /// <param name="offsets">The offsets that are pointing to the right address.</param>
+        /// <param name="value">The value which will be written into the memory address.</param>
+        public void Write(int address, int[] offsets, float value)
+        {
+            var targetPointer = IntPtr.Add(_BaseAddress, address);
+            var intBaseValue = ReadInt(targetPointer.ToInt32());
+            for (int i = 0; i < offsets.Length - 1; i++)
+            {
+                intBaseValue = ReadInt(IntPtr.Add(new IntPtr(intBaseValue), offsets[i]).ToInt32());
+            }
+            Write(intBaseValue + offsets[offsets.Length - 1], value);
+        }
+
+        /// <summary>
         /// Writes an byte array into the memory address.
         /// </summary>
         /// <param name="address">The memory address to write to.</param>
@@ -159,7 +195,7 @@ namespace RWM.Core
         {
             IntPtr zero = IntPtr.Zero;
 
-            WriteProcessMemory(_ProcessHandle, new IntPtr(address), value, value.Length, ref zero);
+            WriteProcessMemory(_ProcessHandle, new IntPtr(address), value, (UInt32)value.Length, ref zero);
         }
 
         /// <summary>
@@ -172,7 +208,7 @@ namespace RWM.Core
             byte[] buffer = new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, };
             IntPtr zero = IntPtr.Zero;
 
-            WriteProcessMemory(_ProcessHandle, new IntPtr(address), buffer, buffer.Length, ref zero);
+            WriteProcessMemory(_ProcessHandle, new IntPtr(address), buffer, (UInt32)buffer.Length, ref zero);
         }
         #endregion
 
